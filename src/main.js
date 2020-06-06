@@ -1,5 +1,5 @@
 
-import App from './pages/content/changelly.svelte';
+import App from './pages/principal.svelte';
 
 const app = new App({
 	target: document.body,

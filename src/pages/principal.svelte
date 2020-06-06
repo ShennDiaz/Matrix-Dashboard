@@ -1,13 +1,17 @@
+<script>
+import Dashboard from './content/dashboard.svelte';
+</script>
+
 <div class="main-wrapper main-wrapper-1">
 <!--menu / bar color-->
     <div class="navbar-bg line-grey"></div>
     <!--horizontal bar-->
     <nav class="navbar navbar-expand-lg main-navbar" 
          style="height:45px; ">
-         <a href="#" class="navbar-brand sidebar-gone-hide">MATRIX COIN</a>
+         <a href="#" class="navbar-brand sidebar-gone-hide w-100">MATRIX COIN</a>
          <a href="#" class="nav-link sidebar-gone-show" data-toggle="sidebar"><i class="fas fa-bars"></i></a>
          <!--right bar-->
-         <form class="form-inline ml-auto"></form>
+        <div class="breadcrumb-item col-2"><strong>Balance</strong> 5900.0000 ETH</div>
     </nav>
 <!--vertical bar-->
     <div class="main-sidebar sidebar-style-2"
@@ -73,7 +77,7 @@
     </div>
 <!--end vertical bar-->
     <div class="main-content" style="min-height: 680px;">
-        
+        <svelte:component this={Dashboard}/>
     </div>
     <footer class="main-footer">
         <div class="footer-left">
@@ -83,6 +87,4 @@
         </div>
         <div class="footer-right"></div>
     </footer>
-
-
 </div>
