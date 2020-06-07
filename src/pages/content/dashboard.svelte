@@ -9,10 +9,10 @@
             <!--1.1--->
                 <div class="card card-statistic-1">
                 <!--margin color--->
-                    <div class="card border-orange" style="flex-direction: row;">
+                    <div class="row" style="padding: 15px;">
                     <!--img--->
                         <div class="">
-                            <img src="./assets/img/etc.svg" style="height:70px; margin-right:0; margin-left:10px;">
+                            <img src="./assets/img/etc.svg" class="mt-2" style="height:50px; margin-right:0; margin-left:10px;">
                         </div>
                     <!--info--->    
                         <div class="card-wrap">
@@ -51,22 +51,19 @@
             <!--3.1--->
                 <div class="card card-statistic-1">
                 <!--margin color--->
-                    <div class="card border-green" style="flex-direction: row;">
-                    <!--img--->
-                        <!--select class="form-control form-control-sm" name="" id="">
-                            <option value="1">1</option>
-                        </select-->
+                    <div class="row" style="padding: 15px;">
+                        <!--img--->
                         <div class="">
-                            <img src="./assets/img/mtx.svg" style="height:70px; margin-right:0; margin-left:20px;">
+                            <img src="./assets/img/mtx.svg" class="mt-2" style="height:50px; margin-right:0; margin-left:10px;">
                         </div>
-                    <!--info--->    
+                        <!--info--->
                         <div class="card-wrap">
                             <div class="card-header">
-                                <h4>MATRIX COIN</h4>
+                                <h4>ETHEREUM</h4>
                             </div>
                             <div class="card-body">
-                                <p style="font-size: 15px; margin:0px;">1 MTX = 1000.000.000 ETH</p>
-                             </div>
+                                <p style="font-size: 15px; margin:0px;">1 ETH = 1000.000.000 MTX</p>
+                            </div>
                         </div>
                     </div>
                 </div>
