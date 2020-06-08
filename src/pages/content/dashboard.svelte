@@ -7,7 +7,7 @@
     .vertical {
         border-left: 1px solid #e1e1e1;
         height: 100%;
-        position:absolute;
+        position: absolute;
         left: 50%;
     }
 </style>
@@ -81,16 +81,16 @@
                     <div class="vertical-divider">
                         <div class="center-element d-flex justify-content-around">
                             <div class="text-center" id="circle">
-                                    <div class="col-lg-10 mt-2" style="margin-left: 10px;">
-                                        <a style="color: #06ceab; font-size: 25px;">
-                                            <Icon icon={faArrowRight}>
-                                            </Icon>
-                                        </a>
-                                        <a style="color: #9e9e9e; font-size: 25px;">
-                                            <Icon icon={faArrowLeft}>
-                                            </Icon>
-                                        </a>
-                                    </div>
+                                <div class="col-lg-10 mt-2" style="margin-left: 10px;">
+                                    <a style="color: #06ceab; font-size: 25px;">
+                                        <Icon icon={faArrowRight}>
+                                        </Icon>
+                                    </a>
+                                    <a style="color: #9e9e9e; font-size: 25px;">
+                                        <Icon icon={faArrowLeft}>
+                                        </Icon>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -235,22 +235,20 @@
         <div class="col-lg-3 col-md-3 col-sm-3 col-12 text-center mt-5" style="margin: 0 auto;">
             <div class="card">
                 <!--margin color--->
-                    <div class="card-wrap">
-                        <!--info--->
-                        <div class="card-body">
-                            <div class="col">
-                                <div class="line-grey">
-                                <img src="./assets/img/cha-img3.svg" style="width: 150px; margin-bottom:20px;">
-                            </div>
+                <div class="card-wrap">
+                    <!--info--->
+                    <div class="card-body">
+                        <div class="col">
+                            <img src="./assets/img/cha-img3.svg" style="width: 150px; margin-bottom:20px;">
+                            <hr class="mt-3 mb-3"/>
                             <div class="form-check form-check-inline mt-3">
                                 <input class="form-check-input" type="checkbox" id="agree_exchange" value="option1">
                                 <label class="form-check-label" for="agree_exchange">I agree to exchange coins</label>
                             </div>
-                            </div>
                         </div>
                     </div>
+                </div>
             </div>
         </div>
-
     </div>
 </section>
