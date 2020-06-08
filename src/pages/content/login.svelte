@@ -8,7 +8,6 @@
     import {ethereum, selectedAccount} from 'svelte-web3';
 
     let hasClient = false;
-    let address;
 
     async function initClient() {
         try {
@@ -25,12 +24,11 @@
             'login'
             :
                 document.getElementById('lunchModal').click();
-                address = $selectedAccount;
                 break;
             case
             'continue'
             :
-                wallet.set(address);
+                wallet.set($selectedAccount);
                 replace('/dashboard');
                 break;
         }
@@ -88,4 +86,4 @@
         </div>
     </div>
 </section>
-<Modal address="{address}" on:message={handleMessage} />
+<Modal address="{$selectedAccount}" on:message={handleMessage} />

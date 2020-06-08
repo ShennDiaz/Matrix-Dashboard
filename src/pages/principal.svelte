@@ -17,8 +17,8 @@
     <nav class="navbar navbar-expand-lg main-navbar" style="height:45px;">
         <ul class="navbar-nav mr-auto">
             <div class="navbar-brand">
-                <a href="#" class="sidebar-gone-hide w-100">MATRIX COIN</a>
-                <a style="margin-top: -5px; color: #9e9e9e;" href="#" class="nav-link sidebar-gone-show" data-toggle="sidebar">
+                <a class="sidebar-gone-hide w-100">MATRIX COIN</a>
+                <a style="margin-top: -5px; color: #9e9e9e;" class="nav-link sidebar-gone-show" data-toggle="sidebar">
                     <Icon icon={faBars}>
                     </Icon>
                 </a>

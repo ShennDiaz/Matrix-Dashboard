@@ -195,7 +195,6 @@
                                             border-color: transparent;
                                             position: relative;
                                             margin-bottom: 0;">
-
                         <!--info--->
                         <div class="card-wrap" style="margin-top: 10px;">
                             <div class="card-header pr-0" style="text-align: right;">
@@ -207,15 +206,13 @@
                             </div>
                         </div>
                         <!--img--->
-                        <div class="">
-                            <img src="./assets/img/etc.svg" style="height: 85px; margin: 5px auto; float: right;">
-                        </div>
+                        <img src="./assets/img/etc.svg" style="height: 85px; margin: 5px auto; float: right;">
                     </div>
                 </div>
             </div>
             <!--col 2--->
             <div class="col-lg-2 col-md-5 col-sm-5 col-12" align="center" style="margin: 30px auto;">
-                <a style="color: #9e9e9e; font-size: 30px; font-weight: lighter" href="#" class=""
+                <a style="color: #9e9e9e; font-size: 30px; font-weight: lighter" class=""
                    data-toggle="sidebar">
                     <Icon icon={faArrowRight}>
                     </Icon>
@@ -264,7 +261,7 @@
                     <!--info--->
                     <div class="card-body">
                         <div class="col">
-                            <img src="./assets/img/cha-img3.svg" style="width: 150px; margin-bottom:20px;">
+                            <img src="./assets/img/cha-img3.svg" style="width: 150px; margin-bottom:20px; cursor: pointer;">
                             <hr class="mt-3 mb-3"/>
                             <div class="form-check form-check-inline mt-3">
                                 <input class="form-check-input" type="checkbox" id="agree_exchange" value="option1">
