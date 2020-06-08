@@ -1,22 +1,27 @@
 <script>
     import Dashboard from './content/dashboard.svelte';
+    import Icon from 'fa-svelte'
+    import { faBars } from '@fortawesome/free-solid-svg-icons/faBars'
 </script>
 
 <div class="main-wrapper main-wrapper-1">
     <!--menu / bar color-->
     <div class="navbar-bg line-grey"></div>
     <!--horizontal bar-->
-    <nav class="navbar navbar-expand-lg main-navbar" style="height:45px; ">
+    <nav class="navbar navbar-expand-lg main-navbar" style="height:45px;">
         <ul class="navbar-nav mr-auto">
             <div class="navbar-brand">
                 <a href="#" class="sidebar-gone-hide w-100">MATRIX COIN</a>
-                <a href="#" class="nav-link sidebar-gone-show" data-toggle="sidebar"><i class="fas fa-bars"></i></a>
+                <a style="margin-top: -5px; color: #9e9e9e;" href="#" class="nav-link sidebar-gone-show" data-toggle="sidebar">
+                    <Icon icon={faBars}>
+                    </Icon>
+                </a>
             </div>
         </ul>
         <!--right bar-->
         <div class="nav navbar-nav navbar-right">
             <div>
-                <strong>Balance</strong> 5900.0000 ETH
+                <strong>Balance</strong> 0.00000000 ETH
             </div>
         </div>
     </nav>
@@ -26,7 +31,7 @@
         <aside id="sidebar-wrapper">
             <!--logo-->
             <div class="sidebar-brand line">
-                <img src="assets/img/1.png" class="pt-2" alt="logo" width="100" style="padding-top: 2rem !important;">
+                <img src="assets/img/1.png" class="pt-2" alt="logo" width="100">
             </div>
             <!--menu-->
             <ul class="sidebar-menu pt-3">
