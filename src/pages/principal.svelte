@@ -61,7 +61,7 @@
                         <span style="font-size: 11px;">HISTORY</span>
                     </a>
                 </li>
-                <li>
+                <!-- <li>
                     <a href="#" class="nav-link">
                         <img src="./assets/img/icons/book.svg" class="icon-grey">
                         <span style="font-size: 11px;">ADDRESS BOOK</span>
@@ -82,7 +82,7 @@
                         <img src="./assets/img/icons/change.svg" class="icon-grey">
                         <span style="font-size: 11px;">CHANGELLY</span>
                     </a>
-                </li>
+                </li> -->
             </ul>
             <!--end menu-->
         </aside>

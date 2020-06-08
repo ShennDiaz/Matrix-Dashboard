@@ -39,6 +39,22 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="card">
+                    <!--margin color--->
+                    <div class="flex-nowrap" style="">
+                        <div class="card-wrap">
+                            <!--info--->
+                            <div class="card-body">
+                                <p style="font-size: 15px;">SENDING ADDRESS</p>
+                                <div class="text-truncate" style="margin-top: -10px; font-size: 15px;">
+                                    0x8467a0c1b28c1980d85acc20244f9e9ab039b97f
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!--1.2--->
                 <div class="card">
                     <!--margin color--->
@@ -56,6 +72,7 @@
                         </div>
                     </div>
                 </div>
+
             </div>
             <!--col 2--->
             <div class="col-lg-2 col-md-5 col-sm-5 col-12 d-none d-lg-block">
@@ -117,14 +134,18 @@
                     </div>
                 </div>
                 <!--3.3--->
-                <div class="card card-statistic-1">
+                <div class="card">
                     <!--margin color--->
-                    <div class="card border-grey" style="flex-direction: row;">
+                    <div class="row" style="">
                         <div class="card-wrap">
                             <!--info--->
                             <div class="card-body">
-                                <p style="font-size: 15px; margin-top: 0.5rem; margin-bottom: 0.5rem;">
-                                    Your MTX Refund Address</p>
+                                <div class="col">
+                                    <p style="font-size: 15px;">AMOUNT</p>
+                                    <div style="margin-top: -10px; font-size: 15px;">
+                                        0.00000000 <strong>MTX</strong>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -211,14 +232,23 @@
             <!--end col 3--->
         </div>
         <!--end row 2--->
-        <div class="row" style="text-align:center; padding: 50px;">
-            <div style="margin:0px auto; background-color:#fff; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03); width:300px;">
-                <div style="text-align:center;  margin:0px auto; padding: 20px;">
-                    <div class="line-grey">
-                        <img src="./assets/img/cha-img3.svg" style="width: 150px; margin-bottom:20px;">
+        <div class="col-lg-3 col-md-3 col-sm-3 col-12 text-center mt-5" style="margin: 0 auto;">
+            <div class="card">
+                <!--margin color--->
+                    <div class="card-wrap">
+                        <!--info--->
+                        <div class="card-body">
+                            <div class="col">
+                                <div class="line-grey">
+                                <img src="./assets/img/cha-img3.svg" style="width: 150px; margin-bottom:20px;">
+                            </div>
+                            <div class="form-check form-check-inline mt-3">
+                                <input class="form-check-input" type="checkbox" id="agree_exchange" value="option1">
+                                <label class="form-check-label" for="agree_exchange">I agree to exchange coins</label>
+                            </div>
+                            </div>
+                        </div>
                     </div>
-                    <p><input type="checkbox" id="cbox1" value="first_checkbox"> I agree to (Changelly) Coins</p>
-                </div>
             </div>
         </div>
 
