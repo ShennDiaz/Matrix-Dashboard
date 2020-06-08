@@ -1,7 +1,13 @@
 <script>
     import Dashboard from './content/dashboard.svelte';
-    import Icon from 'fa-svelte'
-    import { faBars } from '@fortawesome/free-solid-svg-icons/faBars'
+    import Icon from 'fa-svelte';
+    import { faBars } from '@fortawesome/free-solid-svg-icons/faBars';
+
+    let balance = 0.0;
+
+    async function handleMessage(event) {
+        balance = event.detail.text
+    }
 </script>
 
 <div class="main-wrapper main-wrapper-1">
@@ -21,7 +27,7 @@
         <!--right bar-->
         <div class="nav navbar-nav navbar-right">
             <div>
-                <strong>Balance</strong> 0.00000000 ETH
+                <strong>Balance</strong> {balance} ETH
             </div>
         </div>
     </nav>
@@ -44,19 +50,19 @@
                 <li class="menu-header line">WALLET
                     <img src="./assets/img/icons/arrow.svg" class="icon-green"></li>
                 <li>
-                    <a href="#" class="nav-link">
+                    <a class="nav-link">
                         <img src="./assets/img/icons/arrow-r.svg" class="icon-grey">
                         <span style="font-size: 11px;">RECEIVE</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="nav-link">
+                    <a class="nav-link">
                         <img src="./assets/img/icons/arrow-l.svg" class="icon-grey">
                         <span style="font-size: 11px;">SEND</span>
                     </a>
                 </li>
                 <li>
-                    <a href="#" class="nav-link">
+                    <a class="nav-link">
                         <img src="./assets/img/icons/history.svg" class="icon-grey">
                         <span style="font-size: 11px;">HISTORY</span>
                     </a>
@@ -89,7 +95,7 @@
     </div>
     <!--end vertical bar-->
     <div class="main-content" style="min-height: 680px;">
-        <svelte:component this={Dashboard}/>
+        <svelte:component this={Dashboard} on:message={handleMessage}/>
     </div>
     <footer class="main-footer">
         <div class="footer-left">

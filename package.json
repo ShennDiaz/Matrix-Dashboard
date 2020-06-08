@@ -18,6 +18,8 @@
   },
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^5.13.0",
+    "ethereum-blockies": "^0.1.1",
+    "randomcolor": "^0.5.4",
     "sirv-cli": "^0.4.4",
     "svelte-spa-router": "^2.2.0",
     "svelte-web3": "^0.1.4"

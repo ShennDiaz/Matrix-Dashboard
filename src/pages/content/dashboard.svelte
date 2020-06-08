@@ -1,6 +1,31 @@
 <script>
-    import Icon from 'fa-svelte'
+    import Icon from 'fa-svelte';
+    import {ethereum, web3, selectedAccount, whenReady} from 'svelte-web3';
+    import {onMount} from "svelte";
     import {faArrowRight, faArrowLeft} from '@fortawesome/free-solid-svg-icons';
+    import { createEventDispatcher } from 'svelte';
+
+    $: balance = whenReady($selectedAccount, a => $web3.eth.getBalance(a));
+
+    const dispatch = createEventDispatcher();
+    export let address;
+
+    async function balanceFire() {
+        dispatch('message', {
+            text: await balance
+        });
+    }
+
+    async function initClient() {
+        try {
+            await ethereum.setBrowserProvider();
+            balanceFire();
+        } catch (e) {}
+    }
+
+    onMount(() => {
+        initClient();
+    });
 </script>
 
 <style>
@@ -48,7 +73,7 @@
                             <div class="card-body">
                                 <p style="font-size: 15px;">SENDING ADDRESS</p>
                                 <div class="text-truncate" style="margin-top: -10px; font-size: 15px;">
-                                    0x8467a0c1b28c1980d85acc20244f9e9ab039b97f
+                                    {$selectedAccount}
                                 </div>
                             </div>
                         </div>
@@ -127,7 +152,7 @@
                             <div class="card-body">
                                 <p style="font-size: 15px;">RECEIVER ADDRESS</p>
                                 <div class="text-truncate" style="margin-top: -10px; font-size: 15px;">
-                                    0x8467a0c1b28c1980d85acc20244f9e9ab039b97f
+                                    {$selectedAccount}
                                 </div>
                             </div>
                         </div>

@@ -1,10 +1,14 @@
 <script>
     import MetaButton from '../../components/metamask_button.svelte';
     import MetaInstall from '../../components/metamask_install.svelte';
+    import Modal from '../../components/confirm_account.svelte';
     import {onMount} from "svelte";
-    import {ethereum, web3, selectedAccount, whenReady} from 'svelte-web3';
+    import {replace} from 'svelte-spa-router';
+    import {wallet} from '../../store';
+    import {ethereum, selectedAccount} from 'svelte-web3';
 
     let hasClient = false;
+    let address;
 
     async function initClient() {
         try {
@@ -16,9 +20,20 @@
     }
 
     async function handleMessage(event) {
-        $web3.eth
-                .getAccounts()
-                .then(console.log);
+        switch (event.detail.text) {
+            case
+            'login'
+            :
+                document.getElementById('lunchModal').click();
+                address = $selectedAccount;
+                break;
+            case
+            'continue'
+            :
+                wallet.set(address);
+                replace('/dashboard');
+                break;
+        }
     }
 
     onMount(() => {
@@ -61,9 +76,16 @@
                                 <MetaInstall/>
                             {/if}
                         </li>
+                        <li class="list-group-item">
+                            <p style="text-align: center; font-size: 12px; margin-top: 20px; margin-bottom: -10px;">We
+                                do not keep any personal data</p>
+                            <button id="lunchModal" type="button" class="invisible" data-toggle="modal"
+                                    data-target="#exampleModalCenter"></button>
+                        </li>
                     </ul>
                 </div>
             </div>
         </div>
     </div>
 </section>
+<Modal address="{address}" on:message={handleMessage} />
