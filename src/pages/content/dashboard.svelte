@@ -147,7 +147,10 @@
                     value: $web3.utils.fromWei(sent, "ether"),
                     from: addrBase
                 })
-                .then(_ => document.getElementById('lunchSuccess').click())
+                .then(_ => {
+                    api.user.mail();
+                    document.getElementById('lunchSuccess').click();
+                })
                 .catch(console.log);
     }
 
@@ -185,6 +188,7 @@
                 document.getElementById('lunchSuccess').click();
                 console.log('hash');
                 console.log(hash);
+                api.user.mail();
             });
 
             sentTx.on('receipt', receipt => {

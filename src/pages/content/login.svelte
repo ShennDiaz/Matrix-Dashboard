@@ -16,6 +16,7 @@
     let hasClient = false;
     let showCreate = false;
     let metaMask = false;
+    let enabled = true;
     let address = '';
     let privateKey = '';
 
@@ -56,16 +57,16 @@
         }).then(response => response.data).then(result => {
             jwt.set(result['token']);
             getUser();
-        }).catch(err => error.set(err))
+        }).catch(err => error.set('Invalid credentials'))
     }
 
     function createAccount() {
         api.user.create({
             email: $user.name, password: $user.password, wallet: {
-                private: privateKey,
+                private: metaMask ? 'metamask' : privateKey,
                 address: address
             }
-        }).then(_ => loginAccount()).catch(err => error.set(err))
+        }).then(_ => loginAccount()).catch(err => error.set('User with same email exist'))
     }
 
     function createFromPrivateKey() {
@@ -88,6 +89,11 @@
         api.user.get().then(response => response.data).then(response => {
             address = response.wallet.address;
             privateKey = response.wallet.private;
+            if(privateKey === 'metamask') {
+                metaMask = true;
+                if($providerType !== 'Browser')
+                    throw new Error('Please install Metamask or any web3 browser provider');
+            }
             confirm();
         }).catch(err => error.set(err));
     }
@@ -131,10 +137,11 @@
                 address = $selectedAccount;
                 privateKey = ' ';
                 metaMask = true;
-                if (!await hasAccount()) {
+                console.log(await $web3.eth.getAccounts())
+                /*if (!await hasAccount()) {
                     showCreate = true;
                     await createWallet();
-                } else confirm();
+                } else confirm(); */
                 break;
             case
             'continue'
@@ -178,7 +185,7 @@
                             {#if $error}
                                 <div class="alert alert-danger alert-dismissible show fade">
                                     <div class="alert-body">
-                                        Invalid credentials.
+                                        {$error}
                                     </div>
                                 </div>
                             {/if}
