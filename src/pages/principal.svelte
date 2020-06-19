@@ -1,9 +1,23 @@
 <script>
     import Dashboard from './content/dashboard.svelte';
+    import Admin from './content/admin.svelte';
+    import History from './content/history.svelte';
     import Icon from 'fa-svelte';
-    import { faBars } from '@fortawesome/free-solid-svg-icons/faBars';
+    import {user} from '../store'
+    import {faBars} from '@fortawesome/free-solid-svg-icons/faBars';
 
     let balance = 0.0;
+    const VIEWS = {
+        DASHBOARD: Dashboard,
+        HISTORY: History,
+        ADMIN: Admin
+    };
+
+    let currentView = VIEWS.DASHBOARD;
+
+    function setView(view) {
+        currentView = view;
+    }
 
     async function handleMessage(event) {
         balance = event.detail.text
@@ -14,7 +28,7 @@
     <!--menu / bar color-->
     <div class="navbar-bg line-grey"></div>
     <!--horizontal bar-->
-    <nav class="navbar navbar-expand-lg main-navbar" style="height:45px;">
+    <nav class="navbar navbar-expand-lg main-navbar" style="height:45px; padding-top: 20px;">
         <ul class="navbar-nav mr-auto">
             <div class="navbar-brand">
                 <a class="sidebar-gone-hide w-100">MATRIX COIN</a>
@@ -26,8 +40,13 @@
         </ul>
         <!--right bar-->
         <div class="nav navbar-nav navbar-right">
-            <div>
-                <strong>Balance</strong> {balance} ETH
+            <div class="col">
+                <div>
+                    <strong>Balance</strong> {parseFloat(balance).toFixed(2)} MTX
+                </div>
+                <div>
+                    {$user.name}
+                </div>
             </div>
         </div>
     </nav>
@@ -42,31 +61,24 @@
             <!--menu-->
             <ul class="sidebar-menu pt-3">
                 <li>
-                    <a href="#" class="nav-link">
+                    <a on:click={_ => setView(VIEWS.DASHBOARD)} class="nav-link">
                         <img src="./assets/img/icons/menu.svg" class="icon-grey">
-                        <span style="font-size: 11px;">DASHBOARD</span>
+                        <p class="mt-3" style="font-size: 15px;">Dashboard</p>
                     </a>
                 </li>
-                <li class="menu-header line">WALLET
-                    <img src="./assets/img/icons/arrow.svg" class="icon-green"></li>
+                <li class="menu-header line">WALLET</li>
                 <li>
-                    <a class="nav-link">
-                        <img src="./assets/img/icons/arrow-r.svg" class="icon-grey">
-                        <span style="font-size: 11px;">RECEIVE</span>
-                    </a>
-                </li>
-                <li>
-                    <a class="nav-link">
-                        <img src="./assets/img/icons/arrow-l.svg" class="icon-grey">
-                        <span style="font-size: 11px;">SEND</span>
-                    </a>
-                </li>
-                <li>
-                    <a class="nav-link">
+                    <a on:click={_ => setView(VIEWS.HISTORY)} class="nav-link">
                         <img src="./assets/img/icons/history.svg" class="icon-grey">
-                        <span style="font-size: 11px;">HISTORY</span>
+                        <p class="mt-3" style="font-size: 15px;">History</p>
                     </a>
                 </li>
+                <!--<li>
+                    <a on:click={_ => setView(VIEWS.ADMIN)} class="nav-link">
+                        <img src="./assets/img/icons/arrow-l.svg" class="icon-grey">
+                        <p class="mt-3" style="font-size: 15px;">Admin</p>
+                    </a>
+                </li> -->
                 <!-- <li>
                     <a href="#" class="nav-link">
                         <img src="./assets/img/icons/book.svg" class="icon-grey">
@@ -95,7 +107,7 @@
     </div>
     <!--end vertical bar-->
     <div class="main-content" style="min-height: 680px;">
-        <svelte:component this={Dashboard} on:message={handleMessage}/>
+        <svelte:component this={currentView} on:message={handleMessage}/>
     </div>
     <footer class="main-footer">
         <div class="footer-left">

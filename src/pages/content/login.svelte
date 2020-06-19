@@ -4,17 +4,122 @@
     import Modal from '../../components/confirm_account.svelte';
     import {onMount} from "svelte";
     import {replace} from 'svelte-spa-router';
-    import {wallet} from '../../store';
-    import {ethereum, selectedAccount} from 'svelte-web3';
+    import {wallet, user, metamask, jwt, error} from '../../store';
+    import api from '../../api';
+    import {ethereum, selectedAccount, web3, providerType} from 'svelte-web3';
+
+    const metamaskConnect = () => ethereum.setBrowserProvider()
+    const infuraConnect = () => ethereum.setProvider('https://ropsten.infura.io/v3/b2e24b5841304756bc426b764be4988e');
+
+    user.subscribe(() => error.set(''));
 
     let hasClient = false;
+    let showCreate = false;
+    let metaMask = false;
+    let address = '';
+    let privateKey = '';
 
-    async function initClient() {
-        try {
-            await ethereum.setBrowserProvider();
-            hasClient = true;
-        } catch (e) {
-            hasClient = false;
+    $: if ($providerType === 'Browser') {
+        address = $selectedAccount;
+        privateKey = ' ';
+    }
+
+    let state = {
+        LOGIN: 'LOGIN',
+        CREATE: 'CREATE',
+        KEY: 'KEY'
+    };
+    let currentState = state.LOGIN;
+
+    let formComplete = false;
+    $: if ($user.name !== '' && $user.password !== '') {
+        formComplete = true;
+    }
+
+    function setView(state) {
+        currentState = state;
+    }
+
+    async function createWallet() {
+        setView(state.CREATE);
+        if (!metaMask) {
+            let wallet = $web3.eth.accounts.create();
+            address = wallet.address;
+            privateKey = wallet.privateKey;
+        }
+    }
+
+    function loginAccount() {
+        api.user.credentials({
+            name: $user.name,
+            password: $user.password
+        }).then(response => response.data).then(result => {
+            jwt.set(result['token']);
+            getUser();
+        }).catch(err => error.set(err))
+    }
+
+    function createAccount() {
+        api.user.create({
+            email: $user.name, password: $user.password, wallet: {
+                private: privateKey,
+                address: address
+            }
+        }).then(_ => loginAccount()).catch(err => error.set(err))
+    }
+
+    function createFromPrivateKey() {
+        let temp = privateKey.replace(/\s/g,'');
+        return $web3.eth.accounts.privateKeyToAccount(temp.startsWith('0x') ? temp : '0x'.concat(temp));
+    }
+
+    function hasAccount() {
+        return new Promise(resolve => {
+            api.user.address({
+                address: address,
+            }).then(response => {
+                jwt.set(response.data['token']);
+                resolve(true);
+            }).catch(_ => resolve(false));
+        })
+    }
+
+    function getUser() {
+        api.user.get().then(response => response.data).then(response => {
+            address = response.wallet.address;
+            privateKey = response.wallet.private;
+            confirm();
+        }).catch(err => error.set(err));
+    }
+
+    function confirm() {
+        metamask.set(metaMask);
+        wallet.set(privateKey);
+        document.getElementById('lunchModal').click();
+    }
+
+    async function start() {
+        switch (currentState) {
+            case "LOGIN":
+                if (formComplete) {
+                    metaMask = false;
+                    loginAccount();
+                }
+                break;
+            case "KEY":
+                let wallet = createFromPrivateKey();
+                privateKey = wallet.privateKey;
+                address = wallet.address;
+                metaMask = false;
+                if (await hasAccount()) confirm();
+                else {
+                    showCreate = true;
+                    await createWallet();
+                }
+                break;
+            case "CREATE":
+                if (formComplete) createAccount();
+                break;
         }
     }
 
@@ -23,67 +128,133 @@
             case
             'login'
             :
-                document.getElementById('lunchModal').click();
+                address = $selectedAccount;
+                privateKey = ' ';
+                metaMask = true;
+                if (!await hasAccount()) {
+                    showCreate = true;
+                    await createWallet();
+                } else confirm();
                 break;
             case
             'continue'
             :
-                wallet.set($selectedAccount);
                 replace('/dashboard');
                 break;
         }
     }
 
-    onMount(() => {
-        initClient();
+
+    onMount(async () => {
+        await infuraConnect();
+        await metamaskConnect();
     });
 
 
 </script>
 
-
-<section class="section h-100" style="background-color: white">
+<section class="section h-100" style="">
     <!--menu--->
 
     <!--end menu--->
     <div class="section-body" style="padding-right: 30px; padding-left: 30px">
-        <div class="row">
-            <div class="col-lg-3 col-md-3 col-sm-3 col-12 text-center mt-5" style="margin: 0 auto;">
-                <div class="">
-                    <img style="width: 50%; height: 50%" src="./assets/img/login_01.jpg">
-                </div>
-            </div>
-            <div class="col-lg-3 col-md-3 col-sm-3 col-12 text-center mt-5" style="margin: 0 auto;">
-                <div class="card">
-                    <ul class="list-group list-group-flush">
-                        <li class="list-group-item">
-                            <div class="col">
-                                <h3 style="font-weight: 600; color: #262626; text-align: start;">Welcome</h3>
-                                <h4 style="font-weight: 400; color: #262626; text-align: start;">Sign in to Matrix
-                                    Wallet</h4>
-                            </div>
-                        </li>
-                        <li class="list-group-item">
-                            <p style="text-align: start; margin-left: 15px;">In order to access, you need to have a web3
-                                provider installed, such as Metamask or MEW wallet in your browser</p>
-                        </li>
-                        <li class="list-group-item">
-                            {#if hasClient}
-                                <MetaButton on:message={handleMessage}/>
-                            {:else}
-                                <MetaInstall/>
+        <div class="col-lg-3 col-md-3 col-sm-3 col-12 text-center"
+             style="margin: {currentState === state.CREATE ? '50px' : '10%'} auto;">
+            <div class="card">
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <div class="col">
+                            <h3 style="font-weight: 600; color: #37474F; text-align: start;">Welcome</h3>
+                            <h4 style="font-weight: 400; color: #37474F; text-align: start;">Sign in to Matrix
+                                Wallet</h4>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <p style="text-align: start; margin-left: 15px;">In order to access, you need to have a web3
+                            provider installed, such as Metamask or MEW wallet in your browser</p>
+                    </li>
+                    <li class="list-group-item">
+                        <form>
+                            {#if $error}
+                                <div class="alert alert-danger alert-dismissible show fade">
+                                    <div class="alert-body">
+                                        Invalid credentials.
+                                    </div>
+                                </div>
                             {/if}
-                        </li>
-                        <li class="list-group-item">
-                            <p style="text-align: center; font-size: 12px; margin-top: 20px; margin-bottom: -10px;">We
-                                do not keep any personal data</p>
-                            <button id="lunchModal" type="button" class="invisible" data-toggle="modal"
-                                    data-target="#exampleModalCenter"></button>
-                        </li>
-                    </ul>
-                </div>
+                            {#if currentState === state.LOGIN}
+                                <div class="form-group mb-2">
+                                    <input bind:value={$user.name} type="email" class="form-control"
+                                           aria-describedby="emailHelp"
+                                           placeholder="Enter email">
+                                </div>
+                                <div class="form-group">
+                                    <input bind:value={$user.password} type="password" class="form-control"
+                                           placeholder="Enter password">
+                                </div>
+                            {:else if currentState === state.KEY}
+                                <div class="form-group mb-2">
+                                    <label for="keyp">Private key</label>
+                                    <input bind:value={privateKey} id="keyp" type="text" class="form-control"
+                                           aria-describedby="emailHelp"
+                                           placeholder="Enter private key">
+                                </div>
+                            {:else}
+                                {#if showCreate}
+                                    <p>Please, set email and password for protect your account</p>
+                                {/if}
+                                <div class="form-group mb-2">
+                                    <input bind:value={$user.name} type="email" class="form-control"
+                                           aria-describedby="emailHelp"
+                                           placeholder="Enter email">
+                                </div>
+                                <div class="form-group mb-2">
+                                    <input bind:value={$user.password} type="password" class="form-control"
+                                           placeholder="Enter password">
+                                </div>
+                                <div class="form-group mb-2">
+                                    <label for="publicKey">Address</label>
+                                    <input id="publicKey" bind:value={address} type="text" class="form-control"
+                                           placeholder="Address">
+                                </div>
+                                {#if !showCreate}
+                                    <div class="form-group mb-3">
+                                        <label for="pKey">Private key</label>
+                                        <input bind:value={privateKey} type="text" class="form-control"
+                                               id="pKey" placeholder="Private key">
+                                    </div>
+                                    <p>Keep the private key in a safe place</p>
+                                {/if}
+                            {/if}
+                            <div on:click={start} class="form-group">
+                                <div style="border-radius: .2rem; height: 43px; cursor: pointer; background-color: #212121;">
+                                    <p class="pt-2" style="font-weight: 500; color: white; font-size: 15px;">Enter</p>
+                                </div>
+                            </div>
+                            <p style="margin-bottom: -5px; margin-top: -15px !important;" class="mt-3">Enter with
+                                <strong on:click={_ => setView(currentState === state.LOGIN ? state.KEY : state.LOGIN)}
+                                        style="cursor: pointer;">{currentState === state.LOGIN ? 'Private key' : 'credentials'}</strong>
+                                or <strong on:click={_ => createWallet()} style="cursor: pointer;">or create
+                                    wallet</strong>
+                            </p>
+                        </form>
+                    </li>
+                    <li class="list-group-item">
+                        {#if $providerType === 'Browser'}
+                            <MetaButton on:message={handleMessage}/>
+                        {:else}
+                            <MetaInstall/>
+                        {/if}
+                    </li>
+                    <li class="list-group-item">
+                        <p style="text-align: center; font-size: 12px; margin-top: 20px; margin-bottom: -10px;">We
+                            do not keep any personal data</p>
+                        <button id="lunchModal" type="button" class="invisible" data-toggle="modal"
+                                data-target="#exampleModalCenter"></button>
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
 </section>
-<Modal address="{$selectedAccount}" on:message={handleMessage} />
+<Modal address="{address}" on:message={handleMessage}/>
