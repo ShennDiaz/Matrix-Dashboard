@@ -137,11 +137,10 @@
                 address = $selectedAccount;
                 privateKey = ' ';
                 metaMask = true;
-                console.log(await $web3.eth.getAccounts())
-                /*if (!await hasAccount()) {
+                if (!await hasAccount()) {
                     showCreate = true;
                     await createWallet();
-                } else confirm(); */
+                } else confirm();
                 break;
             case
             'continue'
