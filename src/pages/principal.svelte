@@ -2,21 +2,57 @@
     import Dashboard from './content/dashboard.svelte';
     import Admin from './content/admin.svelte';
     import History from './content/history.svelte';
+    import QR from '../components/qr_modal.svelte';
     import Icon from 'fa-svelte';
-    import {user} from '../store'
-    import {faBars} from '@fortawesome/free-solid-svg-icons/faBars';
+    import {web3} from 'svelte-web3';
+    import {user, wallet} from '../store'
+    import {faBars, faQrcode } from '@fortawesome/free-solid-svg-icons';
 
     let balance = 0.0;
+
+    let mobile = false;
+    let account;
+
+    $: if (findBootstrapEnvironment() === 'xs') {
+        mobile = true;
+    }
+
     const VIEWS = {
         DASHBOARD: Dashboard,
         HISTORY: History,
         ADMIN: Admin
     };
 
+    function findBootstrapEnvironment() {
+        account = $web3.eth.accounts.privateKeyToAccount($wallet);
+        let envs = ['xs', 'sm', 'md', 'lg', 'xl'];
+
+        let el = document.createElement('div');
+        document.body.appendChild(el);
+
+        let curEnv = envs.shift();
+
+        for (let env of envs.reverse()) {
+            el.classList.add(`d-${env}-none`);
+
+            if (window.getComputedStyle(el).display === 'none') {
+                curEnv = env;
+                break;
+            }
+        }
+
+        document.body.removeChild(el);
+        return curEnv;
+    }
+
     let currentView = VIEWS.DASHBOARD;
 
     function setView(view) {
         currentView = view;
+    }
+
+    function showQR() {
+        document.getElementById('lunchModal').click();
     }
 
     async function handleMessage(event) {
@@ -40,12 +76,18 @@
         </ul>
         <!--right bar-->
         <div class="nav navbar-nav navbar-right">
-            <div class="col">
-                <div>
-                    <strong>Balance</strong> {parseFloat(balance).toFixed(2)} MTX
+            <div style="margin-top: {mobile ? '-10px' : '0'};" class="row">
+                <div class="col">
+                    <div>
+                        <strong>Balance</strong> {parseFloat(balance).toFixed(2)} MTX
+                    </div>
+                    <div>
+                        {$user.name}
+                    </div>
                 </div>
-                <div>
-                    {$user.name}
+                <div style="cursor: pointer;" on:click={showQR} class="ml-3 mr-2 pt-2">
+                    <Icon icon={faQrcode}>
+                    </Icon>
                 </div>
             </div>
         </div>
@@ -107,7 +149,7 @@
     </div>
     <!--end vertical bar-->
     <div class="main-content" style="min-height: 680px;">
-        <svelte:component this={currentView} on:message={handleMessage}/>
+        <svelte:component this={currentView} on:message={handleMessage} mobile="{mobile}"/>
     </div>
     <footer class="main-footer">
         <div class="footer-left">
@@ -118,3 +160,7 @@
         <div class="footer-right"></div>
     </footer>
 </div>
+
+<QR address="{account.address}" />
+<button id="lunchModal" type="button" class="invisible" data-toggle="modal"
+        data-target="#qr"></button>

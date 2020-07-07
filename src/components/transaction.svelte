@@ -5,7 +5,7 @@
     export let transaction;
 
     function openEtherscan(hash) {
-        window.open(`https://ropsten.etherscan.io/tx/${hash}`,'_blank');
+        window.open(`https://etherscan.io/tx/${hash}`,'_blank');
     }
 </script>
 

@@ -9,7 +9,7 @@
     import {ethereum, selectedAccount, web3, providerType} from 'svelte-web3';
 
     const metamaskConnect = () => ethereum.setBrowserProvider()
-    const infuraConnect = () => ethereum.setProvider('https://ropsten.infura.io/v3/b2e24b5841304756bc426b764be4988e');
+    const infuraConnect = () => ethereum.setProvider('https://mainnet.infura.io/v3/b2e24b5841304756bc426b764be4988e');
 
     user.subscribe(() => error.set(''));
 
@@ -70,7 +70,7 @@
     }
 
     function createFromPrivateKey() {
-        let temp = privateKey.replace(/\s/g,'');
+        let temp = privateKey.replace(/\s/g, '');
         return $web3.eth.accounts.privateKeyToAccount(temp.startsWith('0x') ? temp : '0x'.concat(temp));
     }
 
@@ -89,9 +89,9 @@
         api.user.get().then(response => response.data).then(response => {
             address = response.wallet.address;
             privateKey = response.wallet.private;
-            if(privateKey === 'metamask') {
+            if (privateKey === 'metamask') {
                 metaMask = true;
-                if($providerType !== 'Browser')
+                if ($providerType !== 'Browser')
                     throw new Error('Please install Metamask or any web3 browser provider');
             }
             confirm();
@@ -141,6 +141,7 @@
                     showCreate = true;
                     await createWallet();
                 } else confirm();
+
                 break;
             case
             'continue'
@@ -149,7 +150,6 @@
                 break;
         }
     }
-
 
     onMount(async () => {
         await infuraConnect();
@@ -165,7 +165,7 @@
     <!--end menu--->
     <div class="section-body" style="padding-right: 30px; padding-left: 30px">
         <div class="col-lg-3 col-md-3 col-sm-3 col-12 text-center"
-             style="margin: {currentState === state.CREATE ? '50px' : '10%'} auto;">
+             style="margin: {currentState === state.CREATE ? '10%' : '10%'} auto;">
             <div class="card">
                 <ul class="list-group list-group-flush">
                     <li class="list-group-item">
@@ -223,35 +223,41 @@
                                     <input id="publicKey" bind:value={address} type="text" class="form-control"
                                            placeholder="Address">
                                 </div>
-                                {#if !showCreate}
+                                <!--{#if !showCreate}
                                     <div class="form-group mb-3">
                                         <label for="pKey">Private key</label>
                                         <input bind:value={privateKey} type="text" class="form-control"
                                                id="pKey" placeholder="Private key">
                                     </div>
                                     <p>Keep the private key in a safe place</p>
-                                {/if}
+                                {/if} -->
                             {/if}
                             <div on:click={start} class="form-group">
                                 <div style="border-radius: .2rem; height: 43px; cursor: pointer; background-color: #212121;">
                                     <p class="pt-2" style="font-weight: 500; color: white; font-size: 15px;">Enter</p>
                                 </div>
                             </div>
-                            <p style="margin-bottom: -5px; margin-top: -15px !important;" class="mt-3">Enter with
-                                <strong on:click={_ => setView(currentState === state.LOGIN ? state.KEY : state.LOGIN)}
-                                        style="cursor: pointer;">{currentState === state.LOGIN ? 'Private key' : 'credentials'}</strong>
-                                or <strong on:click={_ => createWallet()} style="cursor: pointer;">or create
-                                    wallet</strong>
+                            <p style="margin-bottom: -5px; margin-top: -15px !important;" class="mt-3">
+                                {#if currentState !== state.LOGIN}
+                                    <strong on:click={_ => setView(currentState = state.LOGIN)}
+                                            style="cursor: pointer;">
+                                        Login with credentials</strong>
+                                    <!-- <strong on:click={_ => setView(currentState === state.LOGIN ? state.KEY : state.LOGIN)}
+                                           style="cursor: pointer;">{currentState === state.LOGIN ? 'Private key' : 'credentials'}</strong> --->
+                                {:else}
+                                    <strong on:click={_ => createWallet()} class="pb-2" style="cursor: pointer;">
+                                        Create new account</strong>
+                                {/if}
                             </p>
                         </form>
                     </li>
-                    <li class="list-group-item">
+                    <!-- <li class="list-group-item">
                         {#if $providerType === 'Browser'}
                             <MetaButton on:message={handleMessage}/>
                         {:else}
                             <MetaInstall/>
                         {/if}
-                    </li>
+                    </li> -->
                     <li class="list-group-item">
                         <p style="text-align: center; font-size: 12px; margin-top: 20px; margin-bottom: -10px;">We
                             do not keep any personal data</p>

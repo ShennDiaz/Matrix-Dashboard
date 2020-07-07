@@ -20,6 +20,8 @@
     let addrReceiver;
     let addrBase = $selectedAccount;
 
+    export let mobile;
+
     $: if ($providerType === 'Browser') {
         addrBase = $selectedAccount;
     }
@@ -41,7 +43,7 @@
     $: balance = whenReady(addrBase, a => $web3.eth.getBalance(a));
     $: amountETH = mtxTokens / rate;
 
-    const CROWDSALE = '0x3153358dcc0eE53C732aEb94ad9A856357245715';
+    const CROWDSALE = '0x34CfFD0163E50f822Bc19e94cf2954f702Ef72f9';
 
 
     const dispatch = createEventDispatcher();
@@ -100,7 +102,7 @@
 
     async function withProvider() {
         let account = $web3.eth.accounts.privateKeyToAccount($wallet);
-        await ethereum.setProvider('https://ropsten.infura.io/v3/b2e24b5841304756bc426b764be4988e');
+        await ethereum.setProvider('https://mainnet.infura.io/v3/b2e24b5841304756bc426b764be4988e');
         addrReceiver = account.address;
         addrBase = account.address;
         crowdsale = new $web3.eth.Contract(GenericCrowdsale.abi, CROWDSALE);
@@ -155,7 +157,7 @@
     }
 
     async function buyProvider() {
-        let temp = $web3.utils.toWei((mtxTokens / rate).toPrecision(8), "ether");
+        let temp = $web3.utils.toWei((mtxTokens / rate).toPrecision(8).toString(), "ether");
         let amountSent = $web3.utils.toBN(temp);
         let dec = $web3.utils.toBN(decimals);
         const sent = amountSent.mul($web3.utils.toBN(10).pow(dec));
@@ -163,14 +165,13 @@
         //let data = contract.methods.splitFunds(to).encodeABI();
         let data = crowdsale.methods
                 .buyTokens(addrBase).encodeABI();
-        let block = await $web3.eth.getBlock('latest');
         let nonce = await $web3.eth.getTransactionCount(addrBase, 'pending');
-        let gwei = (await api.generic.gwei()).data.fast;
-        const gasPrice = gwei * 1e9;
+        let gwei = (await api.generic.gwei()).data.safeLow;
+        const gasPrice = (gwei / 10) * 1e9;
         const tx = {
             from: addrBase,
             to: CROWDSALE,
-            gasLimit: block.gasLimit,
+            gasLimit: 92000,
             gasPrice: gasPrice,
             nonce: nonce,
             value: $web3.utils.fromWei(sent, "ether"),
@@ -196,7 +197,8 @@
                 console.log(receipt);
             });
 
-            sentTx.on('error', _ => {
+            sentTx.on('error', error => {
+                console.log(error);
                 document.getElementById('lunchError').click();
             });
 
@@ -209,7 +211,7 @@
         let result = event.detail.text;
         switch (result) {
             case 'accept':
-                if($metamask) buyMetamask();
+                if ($metamask) buyMetamask();
                 else buyProvider();
                 break;
         }
@@ -270,7 +272,15 @@
                         <div class="card-wrap">
                             <!--info--->
                             <div class="card-body">
-                                <p style="font-size: 16px; color: #424242;">SENDING ADDRESS</p>
+                                <div class="row">
+                                    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                        <p style="font-size: 16px; color: #424242;">SENDING ADDRESS</p>
+                                    </div>
+                                    <div style="margin-left: {mobile ? '0' : '-40px'}; padding-top: 2px;" class="col">
+                                        <a style="color: #0C598B;" href="{`https://etherscan.io/address/${addrBase}#tokentxns`}"
+                                           target="_blank">View on Etherscan</a>
+                                    </div>
+                                </div>
                                 <div class="text-truncate" style="margin-top: -10px; font-size: 15px;">
                                     {addrBase}
                                 </div>
@@ -290,7 +300,8 @@
                                     <p style="font-size: 16px; color: #424242;">BALANCE</p>
                                     <div style="margin-top: -10px; font-size: 15px;">
                                         {#await balance} {:then value} {(value / 1e18).toFixed(8)}
-                                            <strong>&nbsp;ETH</strong> {/await}
+                                            <strong>&nbsp;ETH</strong>
+                                        {/await}
                                     </div>
                                 </div>
                             </div>
@@ -350,7 +361,15 @@
                         <div class="card-wrap">
                             <!--info--->
                             <div class="card-body">
-                                <p style="font-size: 16px; color: #424242;">RECEIVER ADDRESS</p>
+                                <div class="row">
+                                    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                        <p style="font-size: 16px; color: #424242;">RECEIVER ADDRESS</p>
+                                    </div>
+                                    <div style="margin-left: {mobile ? '0' : '-40px'}; padding-top: 2px;" class="col">
+                                        <a style="color: #0C598B;" href="{`https://etherscan.io/address/${addrReceiver}#tokentxns`}"
+                                           target="_blank">View on Etherscan</a>
+                                    </div>
+                                </div>
                                 <div class="text-truncate" style="margin-top: -10px; font-size: 15px;">
                                     <div class="row ml-0">
                                         {#if !editReceiver}
@@ -510,7 +529,7 @@
 <Dialog on:message={acceptExchange} eth="{parseFloat(amountETH).toFixed(8)}" mtx="{mtxTokens}"/>
 <button id="lunchSuccess" type="button" class="invisible" data-toggle="modal"
         data-target="#successModal"></button>
-<Success on:message={acceptExchange} />
+<Success on:message={acceptExchange}/>
 <button id="lunchError" type="button" class="invisible" data-toggle="modal"
         data-target="#errorModal"></button>
-<Error on:message={acceptExchange} />
+<Error on:message={acceptExchange}/>

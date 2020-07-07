@@ -30,7 +30,7 @@ const user = {
 const generic = {
     usd: _ => axios.get('https://api.coincap.io/v2/assets/ethereum'),
     gwei: _ => axios.get('https://ethgasstation.info/json/ethgasAPI.json'),
-    transactions: address => axios.get(`https://api-ropsten.etherscan.io/api?module=account&action=tokentx&address=${address}&startblock=0&contractaddress=0xA129c25991C138F0b60B34236dc098a3353Baa10&endblock=99999999&sort=asc&apikey=EYJEJPR2Y1IKJTWWU4EIMC57IDEDTT21Q7`)
+    transactions: address => axios.get(`https://api.etherscan.io/api?module=account&action=tokentx&address=${address}&startblock=0&contractaddress=0x1E511e12e8D0135dFC3fC9AfABA0E33696c8683D&endblock=99999999&sort=asc&apikey=EYJEJPR2Y1IKJTWWU4EIMC57IDEDTT21Q7`)
 };
 
 export default {

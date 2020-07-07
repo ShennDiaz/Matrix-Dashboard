@@ -14,7 +14,6 @@
     onMount(() => {
         api.generic.transactions($metamask ? $selectedAccount : $web3.eth.accounts.privateKeyToAccount($wallet).address).then(response => response.data).then(result => {
             transactions = result.result;
-            console.log(transactions);
         });
     });
 </script>
