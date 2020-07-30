@@ -1,6 +1,6 @@
 <script>
-    import MetaButton from '../../components/metamask_button.svelte';
-    import MetaInstall from '../../components/metamask_install.svelte';
+    //import MetaButton from '../../components/metamask_button.svelte';
+    //import MetaInstall from '../../components/metamask_install.svelte';
     import Modal from '../../components/confirm_account.svelte';
     import {onMount} from "svelte";
     import {replace} from 'svelte-spa-router';
@@ -8,7 +8,7 @@
     import api from '../../api';
     import {ethereum, selectedAccount, web3, providerType} from 'svelte-web3';
 
-    const metamaskConnect = () => ethereum.setBrowserProvider()
+    //const metamaskConnect = () => ethereum.setBrowserProvider()
     const infuraConnect = () => ethereum.setProvider('https://mainnet.infura.io/v3/b2e24b5841304756bc426b764be4988e');
 
     user.subscribe(() => error.set(''));
@@ -153,7 +153,7 @@
 
     onMount(async () => {
         await infuraConnect();
-        await metamaskConnect();
+        //await metamaskConnect();
     });
 
 
@@ -220,7 +220,7 @@
                                 </div>
                                 <div class="form-group mb-2">
                                     <label for="publicKey">Address</label>
-                                    <input id="publicKey" bind:value={address} type="text" class="form-control"
+                                    <input disabled id="publicKey" bind:value={address} type="text" class="form-control"
                                            placeholder="Address">
                                 </div>
                                 <!--{#if !showCreate}
@@ -259,8 +259,7 @@
                         {/if}
                     </li> -->
                     <li class="list-group-item">
-                        <p style="text-align: center; font-size: 12px; margin-top: 20px; margin-bottom: -10px;">We
-                            do not keep any personal data</p>
+                        <p style="text-align: center; font-size: 12px; margin-top: 20px; margin-bottom: -10px;">Reset password</p>
                         <button id="lunchModal" type="button" class="invisible" data-toggle="modal"
                                 data-target="#exampleModalCenter"></button>
                     </li>

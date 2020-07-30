@@ -1,6 +1,7 @@
 <script>
     import Icon from 'fa-svelte';
     import Dialog from '../../components/dialog.svelte';
+    import Deposit from '../../components/deposit.svelte';
     import Success from '../../components/sucess.svelte';
     import Error from '../../components/error.svelte';
     import api from '../../api'
@@ -8,12 +9,13 @@
     import {onMount} from "svelte";
     import {faArrowRight, faArrowLeft, faPencilAlt, faSortUp} from '@fortawesome/free-solid-svg-icons';
     import {createEventDispatcher} from 'svelte';
-    import {metamask, wallet} from '../../store';
+    import {metamask, wallet, user} from '../../store';
 
     import * as Matrix from "../../contracts/Matrix.json";
     import * as GenericCrowdsale from "../../contracts/Crowdsale.json";
 
     let ethPrice = '0.0';
+    let mxnPrice = '0.0';
     let editReceiver = false;
     let mtxTokens = 0.0;
 
@@ -59,7 +61,7 @@
     }
 
     async function getTokenRate() {
-        return await crowdsale.methods.rate().call();
+        //return 11100;//await crowdsale.methods.rate().call();
     }
 
     async function getTokenSymbol() {
@@ -80,6 +82,15 @@
             if (mtxTokens > 0) document.getElementById('lunchDialog').click();
         } else showAccept = true;
     }
+
+    function buyFiat(ev) {
+        ev.preventDefault();
+        if (accept) {
+            console.log(mtxTokens)
+            if (mtxTokens > 0) document.getElementById('lunchFiat').click();
+        } else showAccept = true;
+    }
+
 
     function onChange() {
         showAccept = false;
@@ -127,10 +138,19 @@
     }
 
     function getETHPrice() {
-        api.generic.usd().then(result => result.data)
+        api.generic.coin().then(result => result.data)
                 .then(result => result.data)
                 .then(result => {
                     ethPrice = parseFloat(result.priceUsd).toFixed(3);
+                    getUSDPrice();
+                });
+    }
+
+    function getUSDPrice() {
+        api.generic.usd().then(result => result.data)
+                .then(result => {
+                    mxnPrice = parseFloat(result.rates.MXN).toFixed(3);
+                    rate = (ethPrice * mxnPrice) / 0.75;
                 });
     }
 
@@ -162,7 +182,6 @@
         let dec = $web3.utils.toBN(decimals);
         const sent = amountSent.mul($web3.utils.toBN(10).pow(dec));
 
-        //let data = contract.methods.splitFunds(to).encodeABI();
         let data = crowdsale.methods
                 .buyTokens(addrBase).encodeABI();
         let nonce = await $web3.eth.getTransactionCount(addrBase, 'pending');
@@ -182,19 +201,17 @@
         signPromise.then((signedTx) => {
             const sentTx = $web3.eth.sendSignedTransaction(signedTx.rawTransaction);
             sentTx.on('confirmation', (confirmationNumber, receipt) => {
-                console.log('confirmation: ' + confirmationNumber);
+                //console.log('confirmation: ' + confirmationNumber);
             });
 
             sentTx.on('transactionHash', hash => {
                 document.getElementById('lunchSuccess').click();
-                console.log('hash');
-                console.log(hash);
                 api.user.mail();
             });
 
             sentTx.on('receipt', receipt => {
-                console.log('reciept');
-                console.log(receipt);
+                //console.log('reciept');
+                //console.log(receipt);
             });
 
             sentTx.on('error', error => {
@@ -217,10 +234,23 @@
         }
     }
 
+    function withFiat(event) {
+        let result = event.detail.text;
+        switch (result) {
+            case 'accept':
+                api.user.clabe({
+                    mxn: (parseFloat(amountETH).toFixed(8) * ethPrice * mxnPrice).toFixed(2),
+                    mtx: mtxTokens,
+                    email: $user.name
+                })
+                break;
+        }
+    }
+
     onMount(async () => {
         getETHPrice();
         await initClient();
-        rate = await getTokenRate();
+        //rate = await getTokenRate();
         symbol = await getTokenSymbol();
         left = await getCrowdSaleBalance();
         decimals = await getTokenDecimals();
@@ -273,10 +303,10 @@
                             <!--info--->
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                    <div class="col-lg-5 col-md-5 col-sm-5 col-12">
                                         <p style="font-size: 16px; color: #424242;">SENDING ADDRESS</p>
                                     </div>
-                                    <div style="margin-left: {mobile ? '0' : '-40px'}; padding-top: 2px;" class="col">
+                                    <div style="padding-bottom: 10px;" class="col">
                                         <a style="color: #0C598B;" href="{`https://etherscan.io/address/${addrBase}#tokentxns`}"
                                            target="_blank">View on Etherscan</a>
                                     </div>
@@ -349,7 +379,7 @@
                                 <h4>MATRIX COIN</h4>
                             </div>
                             <div class="card-body">
-                                <p style="font-size: 15px; margin:0px;">1 MTX = 0.011 USD</p>
+                                <p style="font-size: 15px; margin:0px;">1 MTX = 0.75 MXN</p>
                             </div>
                         </div>
                     </div>
@@ -362,10 +392,10 @@
                             <!--info--->
                             <div class="card-body">
                                 <div class="row">
-                                    <div class="col-lg-4 col-md-4 col-sm-4 col-12">
+                                    <div class="col-lg-5 col-md-5 col-sm-5 col-12">
                                         <p style="font-size: 16px; color: #424242;">RECEIVER ADDRESS</p>
                                     </div>
-                                    <div style="margin-left: {mobile ? '0' : '-40px'}; padding-top: 2px;" class="col">
+                                    <div style="padding-bottom: 10px;" class="col">
                                         <a style="color: #0C598B;" href="{`https://etherscan.io/address/${addrReceiver}#tokentxns`}"
                                            target="_blank">View on Etherscan</a>
                                     </div>
@@ -374,8 +404,7 @@
                                     <div class="row ml-0">
                                         {#if !editReceiver}
                                             {addrReceiver}
-                                            <div on:click={_ => editReceiver = true}
-                                                 style="cursor: pointer; font-size: 12px; margin-left: 10px;">
+                                            <div style="cursor: pointer; font-size: 12px; margin-left: 10px;"><!--on:click={ /*editReceiver = true */} -->
                                                 <Icon icon={faPencilAlt}>
                                                 </Icon>
                                             </div>
@@ -515,8 +544,14 @@
                                 {/if}
                             </div>
                             <hr class="mt-2"/>
-                            <img on:click={buy} class="ml-4 mt-2" src="./assets/img/cha-img3.svg"
-                                 style="width: 150px; margin-bottom:20px; cursor: pointer;">
+                            <div class="row justify-content-md-center">
+                                <div class="col-12">
+                                    <button on:click={buy} style="margin-top: 10px; margin-bottom: 15px; font-size: 12px" class="btn btn-primary" type="button">Exchange</button>
+                                </div>
+                                <div class="col-12">
+                                    <button on:click={buyFiat} style="margin-top: 10px; font-size: 12px" class="btn btn-light" type="button">FIAT deposit</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -526,7 +561,12 @@
 </section>
 <button id="lunchDialog" type="button" class="invisible" data-toggle="modal"
         data-target="#exampleModalCenter"></button>
+<button id="lunchFiat" type="button" class="invisible" data-toggle="modal"
+        data-target="#modalFiat"></button>
+
 <Dialog on:message={acceptExchange} eth="{parseFloat(amountETH).toFixed(8)}" mtx="{mtxTokens}"/>
+<Deposit on:message={withFiat} mxn="{(parseFloat(amountETH).toFixed(8) * ethPrice * mxnPrice).toFixed(2)}" mtx="{mtxTokens}"/>
+
 <button id="lunchSuccess" type="button" class="invisible" data-toggle="modal"
         data-target="#successModal"></button>
 <Success on:message={acceptExchange}/>

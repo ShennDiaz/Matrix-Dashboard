@@ -14,8 +14,12 @@
                 </button>
             </div>
             <div class="modal-body" style="background-color: #F8F8F8;">
-                <QR codeValue="{address}" squareSize="{150}"/>
-                <p class="mt-3 text-center" style="font-size: 14px;">Matrix wallet: {address}</p>
+                <div class="row justify-content-center">
+                    <QR codeValue="{address}" squareSize="{150}"/>
+                    <div class="col-12">
+                        <p class="mt-3 text-center" style="font-size: 18px; font-weight: 700; word-wrap: break-word;">{address}</p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
