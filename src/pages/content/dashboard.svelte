@@ -240,8 +240,7 @@
             case 'accept':
                 api.user.clabe({
                     mxn: (parseFloat(amountETH).toFixed(8) * ethPrice * mxnPrice).toFixed(2),
-                    mtx: mtxTokens,
-                    email: $user.name
+                    mtx: mtxTokens
                 })
                 break;
         }
@@ -549,7 +548,7 @@
                                     <button on:click={buy} style="margin-top: 10px; margin-bottom: 15px; font-size: 12px" class="btn btn-primary" type="button">Exchange</button>
                                 </div>
                                 <div class="col-12">
-                                    <button on:click={buyFiat} style="margin-top: 10px; font-size: 12px" class="btn btn-light" type="button">FIAT deposit</button>
+                                    <button on:click={buyFiat} style="margin-top: 10px; font-size: 12px" class="btn btn-light" type="button">OTC P2P transaction</button>
                                 </div>
                             </div>
                         </div>
