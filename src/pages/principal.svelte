@@ -1,5 +1,6 @@
 <script>
     import Dashboard from './content/dashboard.svelte';
+    import Password from './content/update_password.svelte';
     import Admin from './content/admin.svelte';
     import History from './content/history.svelte';
     import QR from '../components/qr_modal.svelte';
@@ -20,7 +21,8 @@
     const VIEWS = {
         DASHBOARD: Dashboard,
         HISTORY: History,
-        ADMIN: Admin
+        ADMIN: Admin,
+        PASSWORD:Password
     };
 
     function findBootstrapEnvironment() {
@@ -108,11 +110,19 @@
                         <p class="mt-3" style="font-size: 15px;">Dashboard</p>
                     </a>
                 </li>
+
                 <li class="menu-header line">WALLET</li>
                 <li>
                     <a on:click={_ => setView(VIEWS.HISTORY)} class="nav-link">
                         <img src="./assets/img/icons/history.svg" class="icon-grey">
                         <p class="mt-3" style="font-size: 15px;">History</p>
+                    </a>
+                </li>
+                <li class="menu-header line">Setting</li>
+                <li>
+                    <a on:click={_ => setView(VIEWS.PASSWORD)} class="nav-link">
+                        <img src="./assets/img/icons/history.svg" class="icon-grey">
+                        <p class="mt-3" style="font-size: 15px;">Update</p>
                     </a>
                 </li>
                 <!--<li>

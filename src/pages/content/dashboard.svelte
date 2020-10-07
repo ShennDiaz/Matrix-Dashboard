@@ -378,7 +378,7 @@
                                 <h4>MATRIX COIN</h4>
                             </div>
                             <div class="card-body">
-                                <p style="font-size: 15px; margin:0px;">1 MTX = 0.75 MXN</p>
+                                <p style="font-size: 15px; margin:0px;">1 MTX = $ 1.00 MXN (hasta el 14 de octubre)</p>
                             </div>
                         </div>
                     </div>

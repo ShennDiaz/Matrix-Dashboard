@@ -4,7 +4,7 @@ import {jwt} from '../store';
 
 const API = axios.create({
     withCredentials: false,
-    baseURL: /*'http://0.0.0.0:8080/api/v1/account/', */ 'https://api.mymatrixcoin.com/api/v1/account/',
+    baseURL: 'http://localhost:8080/api/v1/account/',
     headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
@@ -26,7 +26,9 @@ const user = {
     get: _ => API.get(''),
     mail: _ => API.get('buy'),
     clabe: body => API.post('deposit', body),
-    reset: user => API.post('password', user)
+    reset: user => API.post('password', user),
+    resetPasswordStart: user => API.post('reset', user),
+    verifyCode: user => API.post('validateCode', user)
 };
 
 const generic = {

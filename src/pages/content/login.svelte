@@ -1,8 +1,7 @@
+
 <script>
-    //import MetaButton from '../../components/metamask_button.svelte';
-    //import MetaInstall from '../../components/metamask_install.svelte';
     import Modal from '../../components/confirm_account.svelte';
-    import {onMount} from "svelte";
+    import {onMount,onDestroy} from "svelte";
     import {replace} from 'svelte-spa-router';
     import {wallet, user, metamask, jwt, error} from '../../store';
     import api from '../../api';
@@ -10,15 +9,21 @@
 
     //const metamaskConnect = () => ethereum.setBrowserProvider()
     const infuraConnect = () => ethereum.setProvider('https://mainnet.infura.io/v3/b2e24b5841304756bc426b764be4988e');
-
+    $: captchaValidate =false;
     user.subscribe(() => error.set(''));
 
     let hasClient = false;
     let showCreate = false;
     let metaMask = false;
     let enabled = true;
+    let errorReset;
     let address = '';
     let privateKey = '';
+    let codeEmail='';
+    let update_password='';
+    let mensaje="";
+    let mensajeCaptcha="";
+    let validaCaptcha=false;
 
     $: if ($providerType === 'Browser') {
         address = $selectedAccount;
@@ -28,7 +33,10 @@
     let state = {
         LOGIN: 'LOGIN',
         CREATE: 'CREATE',
-        KEY: 'KEY'
+        REST_PASSWORD:'RESET_PASSWORD',
+        KEY: 'KEY',
+        CODE:"CODE",
+        UPDATE_PASSWORD:'UPDATE_PASSWORD'
     };
     let currentState = state.LOGIN;
 
@@ -36,7 +44,9 @@
     $: if ($user.name !== '' && $user.password !== '') {
         formComplete = true;
     }
+    
 
+    
     function setView(state) {
         currentState = state;
     }
@@ -51,13 +61,32 @@
     }
 
     function loginAccount() {
-        api.user.credentials({
+        if(captchaValidate){
+            api.user.credentials({
             name: $user.name,
             password: $user.password
         }).then(response => response.data).then(result => {
             jwt.set(result['token']);
             getUser();
         }).catch(err => error.set('Invalid credentials'))
+        validaCaptcha=false;
+        }else{
+           validaCaptcha=true;
+           mensajeCaptcha="captcha validation not credited"; 
+        }
+    }
+    function verifiCode(){
+        api.user.verifyCode({
+            email: $user.name,
+            codeEmail: codeEmail,
+        }).then(response => response.data).then(result => {
+            errorReset=false;
+            mensaje="";
+           setView(state.UPDATE_PASSWORD);
+        }).catch(err => {
+            errorReset=true;
+            mensaje="invalid code";
+        })
     }
 
     function createAccount() {
@@ -67,6 +96,40 @@
                 address: address
             }
         }).then(_ => loginAccount()).catch(err => error.set('User with same email exist'))
+    }
+    function resetPassword() {
+        setView(state.REST_PASSWORD);
+    }
+    function updatePasswordFinish() {
+        api.user.reset({
+        email: $user.name,
+        password: update_password
+        }).then(response => response.data).then(result => {
+            errorReset=false;
+            mensaje="";
+            $user.name="";
+            setView(state.LOGIN);
+        }).catch(err => {
+            errorReset=true;
+            mensaje="error when modifying password";
+        })
+    }
+    function resetPasswordFinish() {
+        //api.user.reset($user.name).then(_ => loginAccount()).catch(err => error.set('User with same email exist'))
+        api.user.resetPasswordStart({
+            email: $user.name,
+        }).then(response => response.data).then(result => {
+            errorReset=false;
+            mensaje="";
+           console.log("ok");
+           errorReset=true;
+            mensaje="We have sent you an email with the verification code";
+           setView(state.CODE);
+        }).catch(err => {
+            console.log("error");
+            errorReset=true;
+            mensaje="email does not exist";
+        })
     }
 
     function createFromPrivateKey() {
@@ -112,6 +175,18 @@
                     loginAccount();
                 }
                 break;
+            case "RESET_PASSWORD":
+                    metaMask = false;
+                    resetPasswordFinish();
+                break;
+            case "CODE":
+                metaMask = false;
+                verifiCode();
+                break;
+            case "UPDATE_PASSWORD":
+                metaMask = false;
+                updatePasswordFinish();
+            break;               
             case "KEY":
                 let wallet = createFromPrivateKey();
                 privateKey = wallet.privateKey;
@@ -150,12 +225,22 @@
                 break;
         }
     }
-
+    function verCapcha(){
+        console.log("todo bien");
+    }
+    function verifyUser() {
+        captchaValidate=true;
+        console.log("validado");
+    }
     onMount(async () => {
         await infuraConnect();
+        window.verifyUser = verifyUser;
         //await metamaskConnect();
+        
     });
-
+    onDestroy(() => {
+        window.verifyUser = null;
+    })
 
 </script>
 
@@ -209,11 +294,31 @@
                                 {#if showCreate}
                                     <p>Please, set email and password for protect your account</p>
                                 {/if}
+                                {#if currentState !== state.CODE && currentState !== state.UPDATE_PASSWORD}
                                 <div class="form-group mb-2">
                                     <input bind:value={$user.name} type="email" class="form-control"
                                            aria-describedby="emailHelp"
                                            placeholder="Enter email">
                                 </div>
+                                {/if}
+                                {#if currentState=="CODE"}
+                                <div class="form-group mb-2">
+                                    <input bind:value={codeEmail} type="text" class="form-control"
+                                           aria-describedby="emailHelp"
+                                           placeholder="Enter code">
+                                </div>
+                                {/if}
+                                {#if currentState=="UPDATE_PASSWORD"}
+                                <div class="form-group mb-2">
+                                    <input bind:value={update_password} type="text" class="form-control"
+                                           aria-describedby="emailHelp"
+                                           placeholder="Enter new password">
+                                </div>
+                                {/if}
+                                {#if errorReset}
+                                    <p class="red">{mensaje}</p>
+                                {/if}
+                                {#if currentState !== state.REST_PASSWORD && currentState !== state.CODE && currentState !== state.UPDATE_PASSWORD}
                                 <div class="form-group mb-2">
                                     <input bind:value={$user.password} type="password" class="form-control"
                                            placeholder="Enter password">
@@ -223,6 +328,7 @@
                                     <input disabled id="publicKey" bind:value={address} type="text" class="form-control"
                                            placeholder="Address">
                                 </div>
+                                {/if}
                                 <!--{#if !showCreate}
                                     <div class="form-group mb-3">
                                         <label for="pKey">Private key</label>
@@ -232,11 +338,18 @@
                                     <p>Keep the private key in a safe place</p>
                                 {/if} -->
                             {/if}
-                            <div on:click={start} class="form-group">
+                            
+                                <div class="g-recaptcha" data-sitekey="6Lc6BMUZAAAAAMxX4CCkE9FJO6Bq5leQ9t3ph9xu" data-callback="verifyUser"></div>
+                               
+                            {#if validaCaptcha}
+                                <p class="red">{mensajeCaptcha}</p>
+                            {/if}
+                            <div on:click={start} class="form-group" id="enter_day">
                                 <div style="border-radius: .2rem; height: 43px; cursor: pointer; background-color: #212121;">
-                                    <p class="pt-2" style="font-weight: 500; color: white; font-size: 15px;">Enter</p>
+                                    <p class="pt-2" style="font-weight: 500; color: white; font-size: 15px;" >Enter</p>
                                 </div>
                             </div>
+                            
                             <p style="margin-bottom: -5px; margin-top: -15px !important;" class="mt-3">
                                 {#if currentState !== state.LOGIN}
                                     <strong on:click={_ => setView(currentState = state.LOGIN)}
@@ -258,8 +371,9 @@
                             <MetaInstall/>
                         {/if}
                     </li> -->
+                    
                     <li class="list-group-item">
-                        <p style="text-align: center; font-size: 12px; margin-top: 20px; margin-bottom: -10px;">Reset password</p>
+                        <p style="text-align: center; font-size: 12px; margin-top: 20px; margin-bottom: -10px; cursor:pointer;" on:click={_ => resetPassword()}>Reset password</p>
                         <button id="lunchModal" type="button" class="invisible" data-toggle="modal"
                                 data-target="#exampleModalCenter"></button>
                     </li>
