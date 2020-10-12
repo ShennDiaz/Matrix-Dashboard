@@ -4,7 +4,7 @@ import {jwt} from '../store';
 
 const API = axios.create({
     withCredentials: false,
-    baseURL: 'http://localhost:8080/api/v1/account/',
+    baseURL: /*'http://0.0.0.0:8080/api/v1/account/', */ 'https://api.mymatrixcoin.com/api/v1/account/',
     headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
