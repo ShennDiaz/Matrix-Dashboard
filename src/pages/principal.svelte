@@ -8,7 +8,8 @@
     import {web3} from 'svelte-web3';
     import {user, wallet} from '../store'
     import {faBars, faQrcode } from '@fortawesome/free-solid-svg-icons';
-
+    import {onMount,onDestroy} from "svelte";
+    
     let balance = 0.0;
 
     let mobile = false;
@@ -60,6 +61,14 @@
     async function handleMessage(event) {
         balance = event.detail.text
     }
+    onMount(()=>{
+        window.$('.cuenta-regresiva').countdown('2020/11/20',function(event){
+            window.$('#dias').html(event.strftime('%D'));
+            window.$('#horas').html(event.strftime('%H'));
+            window.$('#minutos').html(event.strftime('%M'));
+            window.$('#segundos').html(event.strftime('%S'));
+        })
+    });
 </script>
 
 <div class="main-wrapper main-wrapper-1">
@@ -159,6 +168,17 @@
     </div>
     <!--end vertical bar-->
     <div class="main-content" style="min-height: 680px;">
+        <div class="seccionr">
+            <h2>Faltan</h2>
+            <div class="cuenta-regresiva">
+                <ul class="clearfix">
+                    <li><p id="dias" class="numero"></p>dias</li>
+                    <li><p id="horas" class="numero"></p>horas</li>
+                    <li><p id="minutos" class="numero"></p>minutos</li>
+                    <li><p id="segundos" class="numero"></p>segundos</li>
+                </ul>
+            </div>
+        </div>
         <svelte:component this={currentView} on:message={handleMessage} mobile="{mobile}"/>
     </div>
     <footer class="main-footer">

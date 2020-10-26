@@ -6,7 +6,7 @@
     import {wallet, user, metamask, jwt, error} from '../../store';
     import api from '../../api';
     import {ethereum, selectedAccount, web3, providerType} from 'svelte-web3';
-
+    //Ultima version
     //const metamaskConnect = () => ethereum.setBrowserProvider()
     const infuraConnect = () => ethereum.setProvider('https://mainnet.infura.io/v3/b2e24b5841304756bc426b764be4988e');
     $: captchaValidate =false;
