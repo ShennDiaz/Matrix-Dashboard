@@ -19,7 +19,7 @@
   "dependencies": {
     "@fortawesome/free-solid-svg-icons": "^5.13.0",
     "@rollup/plugin-json": "^4.1.0",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "ethereum-blockies": "^0.1.1",
     "randomcolor": "^0.5.4",
     "sirv-cli": "^0.4.4",
